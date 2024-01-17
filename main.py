@@ -82,7 +82,7 @@ inject_custom_css()
 
 # Função principal
 def main():
-    st.image("assets\prowein.png")
+    st.image("assets/prowein.png")
 
     st.title("Sorteio dos Stands para a Prowein 2024")
 
