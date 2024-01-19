@@ -116,6 +116,8 @@ def main():
         colL.dataframe(df1, hide_index=True)
         colR.dataframe(df2, hide_index=True)
 
+        st.image("assets/prowein-exhibition-map.jpeg")
+
         # Adicionar um botão para realizar o sorteio
         # Adicionar um botão para realizar o sorteio (desabilitado se já foi pressionado)
         if not st.session_state.button_pressed:

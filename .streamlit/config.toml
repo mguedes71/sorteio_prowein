@@ -1,17 +1,5 @@
 [global]
 
-# ***DEPRECATED***
-# global.disableWatchdogWarning has been deprecated has been deprecated and
-# will be removed in a future version. This option will be removed on or after
-# 2024-01-20.
-# ****************
-# By default, Streamlit checks if the Python watchdog module is available
-# and, if not, prints a warning asking for you to install it. The watchdog
-# module is not required, but highly recommended. It improves Streamlit's
-# ability to detect changes to files in your filesystem.
-# If you'd like to turn off this warning, set this to True.
-# Default: false
-disableWatchdogWarning = false
 
 # By default, Streamlit displays a warning when a user sets both a widget
 # default value in the function defining the widget and a widget value via
@@ -39,23 +27,6 @@ level = "info"
 messageFormat = "%(asctime)s %(message)s"
 
 [client]
-
-# ***DEPRECATED***
-# client.caching has been deprecated and is not required anymore for our new
-# caching commands. This option will be removed on or after 2024-01-20.
-# ****************
-# Whether to enable st.cache. This does not affect st.cache_data or
-# st.cache_resource.
-# Default: true
-caching = true
-
-# ***DEPRECATED***
-# client.displayEnabled has been deprecated and will be removed in a future
-# version. This option will be removed on or after 2024-01-20.
-# ****************
-# If false, makes your Streamlit script not draw to a Streamlit app.
-# Default: true
-displayEnabled = true
 
 # Controls whether uncaught app exceptions and deprecation warnings
 # are displayed in the browser. By default, this is set to True and
