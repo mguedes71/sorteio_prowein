@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
 import random
-from tkinter import filedialog
 from openpyxl import Workbook
 from openpyxl.styles import Font
 import os
+
+# from tkinter import filedialog
 
 
 def authenticate():
@@ -73,8 +74,9 @@ def assign_stands(df1, stands_by_area):
 
 # Obter o diretório de destino do usuário usando filedialog
 def choose_export_directory():
-    export_directory = os.path.join(os.path.expanduser("~"), "Desktop")
-    return filedialog.askdirectory(initialdir=export_directory)
+    # export_directory = os.path.join(os.path.expanduser("~"), "Desktop")
+    # return filedialog.askdirectory(initialdir=export_directory)
+    return os.path.join(os.path.expanduser("~"), "Desktop")
 
 
 # Função para exportar DataFrame para Excel com formatação personalizada
