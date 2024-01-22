@@ -199,6 +199,7 @@ def main():
                 export_path = f"{export_directory}/resultado_sorteio.xlsx"
                 # Exportar DataFrame com formatação personalizada
                 export_to_excel(st.session_state.dfinal, export_path)
+                export_path = export_path.replace("/", "\\")
                 st.success(f"O resultado do sorteio foi exportado para {export_path}")
 
         # Adicione o "Footer" aqui
