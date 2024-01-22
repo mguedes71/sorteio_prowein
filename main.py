@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 import random
+from tkinter import filedialog
+from openpyxl import Workbook
+from openpyxl.styles import Font
+import os
 
 
 def authenticate():
@@ -65,6 +69,48 @@ def assign_stands(df1, stands_by_area):
     # print(f"Assigned Stands: {assigned_stands}")
 
     return assigned_stands
+
+
+# Obter o diretório de destino do usuário usando filedialog
+def choose_export_directory():
+    export_directory = os.path.join(os.path.expanduser("~"), "Desktop")
+    return filedialog.askdirectory(initialdir=export_directory)
+
+
+# Função para exportar DataFrame para Excel com formatação personalizada
+def export_to_excel(df, path):
+    # Cria um objeto Workbook do openpyxl
+    wb = Workbook()
+
+    # Cria uma planilha no Workbook
+    ws = wb.active
+
+    # Adiciona os dados do DataFrame à folha
+    ws.append(list(df.columns))  # Adiciona a primeira linha com cabeçalhos
+    for r_idx, row in enumerate(df.itertuples(), start=2):
+        ws.append(row[1:])  # Ignora o índice do DataFrame
+
+    # Formatação personalizada
+    header_font = Font(bold=True)
+    for cell in ws[1]:
+        cell.font = header_font
+
+    # Autoajuste de largura de coluna
+    for column in ws.columns:
+        max_length = 0
+        column = [cell for cell in column]
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = max_length + 2
+        ws.column_dimensions[column[0].column_letter].width = adjusted_width
+
+    ws.title = "Sorteio"
+    # Salva o arquivo Excel
+    wb.save(path)
 
 
 st.set_page_config(
@@ -146,6 +192,12 @@ def main():
             st.dataframe(
                 st.session_state.dfinal, use_container_width=True, hide_index=True
             )
+            if st.button("Exportar para Excel 📁"):
+                export_directory = choose_export_directory()
+                export_path = f"{export_directory}/resultado_sorteio.xlsx"
+                # Exportar DataFrame com formatação personalizada
+                export_to_excel(st.session_state.dfinal, export_path)
+                st.success(f"O resultado do sorteio foi exportado para {export_path}")
 
         # Adicione o "Footer" aqui
         st.markdown("---")
