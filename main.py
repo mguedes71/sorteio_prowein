@@ -3,9 +3,7 @@ import pandas as pd
 import random
 from openpyxl import Workbook
 from openpyxl.styles import Font
-import os
-
-# from tkinter import filedialog
+from io import BytesIO
 
 
 def authenticate():
@@ -26,18 +24,6 @@ def load_data(file_path):
     df1 = xls.parse(xls.sheet_names[0])
     df2 = xls.parse(xls.sheet_names[1])
     return df1, df2
-
-
-# Sortear números e stands únicos para cada área
-# def sort_numbers_and_stands(df2):
-#     # Agrupar o DataFrame 2 por área e gerar uma lista de stands para cada área
-#     grouped_by_area = df2.groupby("Area")["Stand"].apply(list).to_dict()
-
-#     # Embaralhar a ordem dos stands em cada área
-#     for area in grouped_by_area:
-#         random.shuffle(grouped_by_area[area])
-
-#     return grouped_by_area
 
 
 # Sortear stands únicos para cada área
@@ -72,47 +58,52 @@ def assign_stands(df1, stands_by_area):
     return assigned_stands
 
 
-# Obter o diretório de destino do usuário usando filedialog
-def choose_export_directory():
-    # export_directory = os.path.join(os.path.expanduser("~"), "Desktop")
-    # return filedialog.askdirectory(initialdir=export_directory)
-    return os.path.join(os.path.expanduser("~"), "Desktop")
-
-
 # Função para exportar DataFrame para Excel com formatação personalizada
-def export_to_excel(df, path):
-    # Cria um objeto Workbook do openpyxl
-    wb = Workbook()
+def export_to_excel(df):
+    # Cria um objeto BytesIO para armazenar o Excel em memória
+    with BytesIO() as excel_buffer:
+        try:
+            # Cria um objeto Workbook do openpyxl
+            wb = Workbook()
 
-    # Cria uma planilha no Workbook
-    ws = wb.active
+            # Cria uma planilha no Workbook
+            ws = wb.active
 
-    # Adiciona os dados do DataFrame à folha
-    ws.append(list(df.columns))  # Adiciona a primeira linha com cabeçalhos
-    for r_idx, row in enumerate(df.itertuples(), start=2):
-        ws.append(row[1:])  # Ignora o índice do DataFrame
+            # Adiciona os dados do DataFrame à folha
+            ws.append(list(df.columns))  # Adiciona a primeira linha com cabeçalhos
+            for r_idx, row in enumerate(df.itertuples(), start=2):
+                ws.append(row[1:])  # Ignora o índice do DataFrame
 
-    # Formatação personalizada
-    header_font = Font(bold=True)
-    for cell in ws[1]:
-        cell.font = header_font
+            # Formatação personalizada
+            header_font = Font(bold=True)
+            for cell in ws[1]:
+                cell.font = header_font
 
-    # Autoajuste de largura de coluna
-    for column in ws.columns:
-        max_length = 0
-        column = [cell for cell in column]
-        for cell in column:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(cell.value)
-            except:
-                pass
-        adjusted_width = max_length + 2
-        ws.column_dimensions[column[0].column_letter].width = adjusted_width
+            # Autoajuste de largura de coluna
+            for column in ws.columns:
+                max_length = 0
+                column = [cell for cell in column]
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = max_length + 2
+                ws.column_dimensions[column[0].column_letter].width = adjusted_width
 
-    ws.title = "Sorteio"
-    # Salva o arquivo Excel
-    wb.save(path)
+            ws.title = "Sorteio"
+
+            # Gravar o ficheiro Excel no BytesIO
+            wb.save(excel_buffer)
+
+            # Retornar os bytes do Excel em base64
+            return excel_buffer.getvalue()
+
+        except Exception as e:
+            # Tratar exceções ao salvar o Workbook
+            print(f"Erro ao gravar o Workbook: {e}")
+            return None
 
 
 st.set_page_config(
@@ -194,13 +185,21 @@ def main():
             st.dataframe(
                 st.session_state.dfinal, use_container_width=True, hide_index=True
             )
-            if st.button("Exportar para Excel 📁"):
-                export_directory = choose_export_directory()
-                export_path = f"{export_directory}/resultado_sorteio.xlsx"
-                # Exportar DataFrame com formatação personalizada
-                export_to_excel(st.session_state.dfinal, export_path)
-                export_path = export_path.replace("/", "\\")
-                st.success(f"O resultado do sorteio foi exportado para {export_path}")
+            b64_data = export_to_excel(st.session_state.dfinal)
+
+            if b64_data:
+                st.download_button(
+                    label="Clique aqui para fazer download do sorteio ✅",
+                    data=b64_data,
+                    file_name="resultado_sorteio.xlsx",
+                    key="download_excel_button",
+                    help="Clique para descarregar o ficheiro Excel.",
+                    on_click=None,  # Você pode adicionar uma função de callback aqui, se necessário
+                    args=None,
+                    kwargs=None,
+                )
+            else:
+                st.warning("Houve um problema ao gerar o ficheiro Excel.")
 
         # Adicione o "Footer" aqui
         st.markdown("---")
