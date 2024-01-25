@@ -155,7 +155,7 @@ def main():
         colL.dataframe(df1, hide_index=True)
         colR.dataframe(df2, hide_index=True)
 
-        st.image("assets/prowein-exhibition-map.jpeg")
+        st.image("assets/prowein-exhibition-map.jpg")
 
         # Adicionar um botão para realizar o sorteio
         # Adicionar um botão para realizar o sorteio (desabilitado se já foi pressionado)
